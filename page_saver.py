@@ -3,8 +3,10 @@ import page_saver
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 import time
+import log
+import logging
 
-
+log.log_init()
 
 def save_page_request(url):
     '''
@@ -18,7 +20,7 @@ def save_page_request(url):
         if page.status_code == 200:
             print(page.status_code)
             return page
-        print(page.status_code)
+        logging.INFO(page.status_code)
 
 
 def save_page_selenium(url):

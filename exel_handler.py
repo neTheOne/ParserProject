@@ -18,7 +18,7 @@ def create_empty_excel(columns: list, filename: str, sheet_name: str = 'Sheet1')
 
 def create_excel_from_dict_list(dict_list: list, output_filename: str, sheet_name):
     '''
-    функция записывает данные из словаря данных в exrel
+    функция записывает данные из словаря данных в exel
     :param dict_list: словарь с данными
     :param output_filename: имя файла excel
     :param sheet_name: название страницы

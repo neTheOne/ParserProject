@@ -1,7 +1,10 @@
 from bs4 import BeautifulSoup
 import page_saver
 import time
+import logging
+import log
 
+log.log_init()
 
 def class_hrefs_find(html):
     '''
@@ -57,14 +60,18 @@ def spell_info_find(spell_hrefs_list):
         spell_page = page_saver.save_page_request(url)
         soup = BeautifulSoup(spell_page.text, "html.parser")
         spell_name = soup.find('h2', class_='card-title').text
-        spell_name = spell_name.strip()
+        spell_name = spell_name.strip() # Сохранение информации об имени заклинания
         range_raw = soup.find('li', class_='range')
         direct_text = range_raw.find_all(string=True, recursive=False)
-        distance = ''.join(direct_text).strip()
+        distance = ''.join(direct_text).strip() # Сохранение информации о дистанции заклинания
         spell_lvl_raw = soup.find('li', class_='school_level')
-        spell_lvl = spell_lvl_raw.find('a').text.strip()
+        spell_lvl = spell_lvl_raw.find('a').text.strip() # Сохранение информации об уровне заклинания
         spell_description_raw = soup.find('div', itemprop='description')
-        spell_description = spell_description_raw.find('p').text.strip()
-        print(spell_name)
-        print(distance)
-        print(spell_lvl)
+        spell_description = spell_description_raw.find('p').text.strip() # Сохранение описания заклинания
+        school_level_li = soup.find('li', class_='school_level')
+        links = school_level_li.find_all('a')
+        school_text = links[1].get_text(strip=True)
+        print(school_text)
+
+
+
