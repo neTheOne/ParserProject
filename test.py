@@ -2,19 +2,21 @@ from bs4 import BeautifulSoup as BS
 import time
 from selenium import webdriver
 from selenium.webdriver.common.by import By
+import exel_handler
+from exel_handler import create_empty_excel
 
-
-url = "https://next.dnd.su/spells/"
-driver = webdriver.Chrome()
-driver.get(url)
-driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
-time.sleep(2)
-html = driver.page_source
-soup = BS(html, "html.parser")
-iph_names = soup.find_all('a', class_='cards_list__item-wrapper')
-for hrefs in iph_names:
-    print(hrefs.get("href"))
-
+'''
+    url = "https://next.dnd.su/spells/"
+    driver = webdriver.Chrome()
+    driver.get(url)
+    driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+    time.sleep(2)
+    html = driver.page_source
+    soup = BS(html, "html.parser")
+    iph_names = soup.find_all('a', class_='cards_list__item-wrapper')
+    for hrefs in iph_names:
+        print(hrefs.get("href"))
+'''
 
 #soup = BeautifulSoup(page.text, "html.parser")
 #all_data = soup.find('ul', class_='cards-list')
@@ -69,3 +71,6 @@ def insert_product_db(product_name, id_number, name, description, price, count, 
         logger.info(f'Данные продукта успешно сохранены в таблицу {product_name}')
     except psycopg.Error as error:
         logger.info(f'Ошибка записи в таблицу {product_name}: {error}')
+
+
+print(create_empty_excel('text.xlsx'))

@@ -1,20 +1,37 @@
 import os
 import pandas as pd
+import openpyxl
 
 
-def create_empty_excel(columns: list, filename: str, sheet_name: str = 'Sheet1'):
-    df = pd.DataFrame(columns=columns)
-
-    if not os.path.exists('excel_files'):
-        os.makedirs('excel_files')
-
-    filepath = os.path.join('excel_files', filename)
-    excel_writer = pd.ExcelWriter(filepath, engine='xlsxwriter')
-    df.to_excel(excel_writer, index=False, sheet_name=sheet_name, freeze_panes=(1, 0))
-    excel_writer._save()
+def create_empty_excel(filename: str):
+    '''
+    Создание пустого exel фалйа
+    :param filename: Нзвание exel файла (filename.xlsx)
+    :return: путь к exel файлу
+    '''
+    os.makedirs("excel_files", exist_ok=True)
+    filepath = os.path.join("excel_files", filename)
+    wb = openpyxl.Workbook()      # создаёт книгу
+    wb.save(filepath)
 
     return filepath
 
+
+def add_sheet_and_rows(filepath: str, sheet_name : str, rows: list):
+    '''
+    Создание нового листа в exel файле и заполнение его из листа
+    :param filensme: имя exel-файла
+    :param sheet_name: имя листа exel
+    :param rows: лист для заполнение листа
+    '''
+    # открываем файл
+    wb = openpyxl.load_workbook(filepath)
+    # создаём новый лист
+    ws = wb.create_sheet(title=sheet_name)
+    for row in rows:
+        ws.append(row)
+
+    wb.save(filepath)
 
 def create_excel_from_dict_list(dict_list: list, output_filename: str, sheet_name):
     '''

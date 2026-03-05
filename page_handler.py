@@ -55,6 +55,8 @@ def spell_info_find(spell_hrefs_list):
     :param spell_hrefs_list: лист со ссылками на станицы заклинаний
     :return: словарь с информацией о заклинаниях
     '''
+    spell_list = []
+    i = 0
     for href in spell_hrefs_list:
         url = "https://next.dnd.su" + href
         spell_page = page_saver.save_page_request(url)
@@ -68,10 +70,20 @@ def spell_info_find(spell_hrefs_list):
         spell_lvl = spell_lvl_raw.find('a').text.strip() # Сохранение информации об уровне заклинания
         spell_description_raw = soup.find('div', itemprop='description')
         spell_description = spell_description_raw.find('p').text.strip() # Сохранение описания заклинания
-        school_level_li = soup.find('li', class_='school_level')
-        links = school_level_li.find_all('a')
-        school_text = links[1].get_text(strip=True)
-        print(school_text)
+        type_li = soup.find('li', class_='school_level')
+        links = type_li.find_all('a')
+        type_text = links[1].get_text(strip=True)
+        class_raw = soup.find('li', class_='class')
+        spell_class = class_raw.find_all("a")[1].text
+        logging.info(f"spell class {spell_class}")
+        logging.info(f"Save spell {spell_name}")
+        spell_list.append([spell_name, distance, spell_lvl, spell_description, type_text, spell_class])
+
+        i += 1
+        if i == 5:
+            break
+
+    return spell_list
 
 
 
