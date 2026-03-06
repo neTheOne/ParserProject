@@ -58,10 +58,16 @@ def class_info_find(class_hrefs_list, spell_list):
 
         class_description = soup.select_one('div[data-page="lore"]').get_text(" ", strip=True)
 
-        class_skills = soup.find_all("div", class_="class__feature", attrs={"data-level": "1"})
+        class_skills_raw = soup.find_all("div", class_="class__feature", attrs={"data-level": "1"})
+        class_skills = {}
+        for f in class_skills_raw:
+            title = f.select_one("h3").get_text(strip=True)
+            text = " ".join(p.get_text(strip=True) for p in f.select("p") if p.get_text(strip=True))
+
+            class_skills[title] = text
 
         traits = soup.select(".class__core_traits__trait")
-
+        hp_dice = ''
         for t in traits:
             caption = t.select_one(".class__core_traits__caption")
 
@@ -72,10 +78,10 @@ def class_info_find(class_hrefs_list, spell_list):
         for spell in spell_list:
             if class_name in spell:
                 spells.append(spell[1])
-        i += 1
 
-        class_list.append([i, recommend_stat, spells, class_name, class_description, ])
-        logging.info([i, recommend_stat, spells, class_name,  class_description, class_skills, ])
+        class_list.append([i, recommend_stat, spells, class_name, class_description, hp_dice, class_skills])
+        i += 1
+        logging.info([i, recommend_stat, spells, class_name,  class_description, class_skills])
 
     return class_list
 

@@ -15,8 +15,5 @@ def main():
     spell_list = page_handler.spell_info_find(spells_hrefs) # ламбда функция нужна для обрезания массива от последних элементов
     class_list = page_handler.class_info_find(class_hrefs, spell_list)
     logging.info(class_list)
-    add_sheet_and_rows(exel_filepath, "spell_sheet", list(map(lambda row: row[:-1], spell_list)))
-    add_sheet_and_rows(exel_filepath, "class_sheet", class_list)
-
 
 main()
