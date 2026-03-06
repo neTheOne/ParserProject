@@ -36,18 +36,48 @@ def spell_hrefs_find(html):
     return spell_hrefs_list
 
 
-def class_info_find(class_page, spell_page):
+def class_info_find(class_hrefs_list, spell_list):
     '''
     Функция для получения информации о классе
-    :param class_page: html код странницы класса
-    :param spell_page: html код странницы заклинаний класса
-    :return: словарь с информацией о классе
+    :param class_hrefs_list: лист со ссылками на станицы классов
+    :param spell_list: лист с заклинаниями
+    :return: лист с информацией о классе
     '''
-    soup = BeautifulSoup(class_page.text, "html.parser")
-    info = []
-    recommend_stat = soup.find('div', class_='class__core_traits__text')
-    info.append(recommend_stat)
+    class_list = []
+    i = 0
+    for href in class_hrefs_list:
+        url = "https://next.dnd.su" + href
+        class_page = page_saver.save_page_request(url)
+        soup = BeautifulSoup(class_page.text, "html.parser")
 
+        raw_stat = soup.find('div', class_='class__core_traits__text')
+        recommend_stat = raw_stat.get_text(strip=True) # Получение рекомендованных стат
+
+        raw_name = soup.select_one("h2.card-title a").text
+        class_name = raw_name.splitlines()[1].strip() # Получение названия класса
+
+        class_description = soup.select_one('div[data-page="lore"]').get_text(" ", strip=True)
+
+        class_skills = soup.find_all("div", class_="class__feature", attrs={"data-level": "1"})
+
+        traits = soup.select(".class__core_traits__trait")
+
+        for t in traits:
+            caption = t.select_one(".class__core_traits__caption")
+
+            if caption and caption.get_text(strip=True) == "Кость хитов":
+                hp_dice = t.select_one(".class__core_traits__text").get_text(strip=True)
+
+        spells = [] # Получение списка заклинаний доступных классу
+        for spell in spell_list:
+            if class_name in spell:
+                spells.append(spell[1])
+        i += 1
+
+        class_list.append([i, recommend_stat, spells, class_name, class_description, ])
+        logging.info([i, recommend_stat, spells, class_name,  class_description, class_skills, ])
+
+    return class_list
 
 def spell_info_find(spell_hrefs_list):
     '''
@@ -72,17 +102,15 @@ def spell_info_find(spell_hrefs_list):
         spell_description = spell_description_raw.find('p').text.strip() # Сохранение описания заклинания
         type_li = soup.find('li', class_='school_level')
         links = type_li.find_all('a')
-        type_text = links[1].get_text(strip=True)
+        type_text = links[1].get_text(strip=True) # Сохранение типа заклинания
         class_raw = soup.find('li', class_='class')
-        spell_class = class_raw.find_all("a")[1].text
+        spell_class = class_raw.find_all("a")[1].text # Сохранение название класса, который может использовать это заклинание
         logging.info(f"spell class {spell_class}")
         logging.info(f"Save spell {spell_name}")
-        spell_list.append([spell_name, distance, spell_lvl, spell_description, type_text, spell_class])
-
+        spell_list.append([i, spell_name, distance, spell_lvl, spell_description, type_text, spell_class])
         i += 1
         if i == 5:
-            break
-
+         break
     return spell_list
 
 
